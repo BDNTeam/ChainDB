@@ -38,7 +38,6 @@ def get_transactions(conn, transaction_ids):
     except IndexError:
         pass
 
-
 @register_query(LocalMongoDBConnection)
 def store_metadatas(conn, metadata):
     return conn.run(
@@ -207,11 +206,26 @@ def get_block(conn, block_id):
 
 
 @register_query(LocalMongoDBConnection)
+def get_block_list(conn, pagesize=1, page=10, sort=-1):
+    try:
+        return conn.run(
+            conn.collection('blocks')
+            .find().skip((page-1)*pagesize).limit(pagesize)).sort({"height":sort})
+    except IndexError:
+        pass
+
+@register_query(LocalMongoDBConnection)
 def get_block_with_transaction(conn, txid):
     return conn.run(
         conn.collection('blocks')
         .find({'transactions': txid},
               projection={'_id': False, 'height': True}))
+
+@register_query(LocalMongoDBConnection)
+def get_block_count(conn):
+    return conn.run(
+        conn.collection('blocks')
+        .count()
 
 
 @register_query(LocalMongoDBConnection)

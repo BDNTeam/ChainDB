@@ -55,3 +55,27 @@ class BlockListApi(Resource):
             blocks = bigchain.get_block_containing_tx(tx_id)
 
         return blocks
+
+class BlockListWithParamsApi(Resource):
+    def get(self):
+        """API endpoint to get the blocks with params.
+
+        Return:
+            A ``list`` of ``block_id``s with page params.
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('page_size', type=str)
+        parser.add_argument('page', type=str)
+        parser.add_argument('sort', type=str)
+
+        args = parser.parse_args(strict=True)
+        page_size = args['page_size']
+        page = args['page']
+        sort = args['sort']
+
+        pool = current_app.config['bigchain_pool']
+
+        with pool() as bigchain:
+            blocks = bigchain.get_block_list(page_size,page,sort)
+
+        return blocks
