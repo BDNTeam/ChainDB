@@ -226,6 +226,7 @@ def get_block_count(conn):
     return conn.run(
         conn.collection('blocks')
         .count()
+    )
 
 
 @register_query(LocalMongoDBConnection)
