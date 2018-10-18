@@ -56,6 +56,7 @@ class BlockListApi(Resource):
 
         return blocks
 
+
 class BlockListWithParamsApi(Resource):
     def get(self):
         """API endpoint to get the blocks with params.
@@ -64,18 +65,31 @@ class BlockListWithParamsApi(Resource):
             A ``list`` of ``block_id``s with page params.
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('page_size', type=str)
-        parser.add_argument('page', type=str)
-        parser.add_argument('sort', type=str)
+        parser.add_argument('page_size', type=int, required=False, location='args',  default=10)
+        parser.add_argument('page', type=int, required=False, location='args', default=1)
 
         args = parser.parse_args(strict=True)
         page_size = args['page_size']
         page = args['page']
-        sort = args['sort']
 
         pool = current_app.config['bigchain_pool']
 
         with pool() as bigchain:
-            blocks = bigchain.get_block_list(page_size,page,sort)
+            blocks = bigchain.get_block_list(page_size,page)
 
         return blocks
+
+class BlockCount(Resource):
+    def get(self):
+        """API endpoint to get the blocks count.
+
+        Return:
+            A number of block count.
+        """
+
+        pool = current_app.config['bigchain_pool']
+
+        with pool() as bigchain:
+            count = bigchain.get_block_count()
+
+        return count

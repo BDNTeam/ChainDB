@@ -161,13 +161,12 @@ def get_block(connection, block_id):
     raise NotImplementedError
 
 @singledispatch
-def get_block_list(conn, pagesize=10, page=1, sort=-1):
+def get_block_list(conn, pagesize, page):
     """Get block list from the bigchain table.
 
     Args:
-        pagesize (str): page size for data
-        page (str): current page number for data
-        sort (str): sort desc or asc, -1 mean desc
+        pagesize (int): page size for data
+        page (int): current page number for data
     
     Returns:
         block (dict): the block or `None`
@@ -193,7 +192,7 @@ def get_block_count(conn):
     """Get block total count from the bigchain table.
     
     Returns:
-        count (str): the total count
+        count (int): the total count
     """
 
     raise NotImplementedError
@@ -252,14 +251,12 @@ def text_search(conn, search, *, language='english', case_sensitive=False,
             simple tokenization and no stemming.
         case_sensitive (bool, optional): Enable or disable case sensitive
             search.
-        diacritic_sensitive (bool=10, optional=1): Enabl=-1e or disable case sensitive
+        diacritic_sensitive (bool, optional): Enable or disable case sensitive
             diacritic search.
         text_score (bool, optional): If ``True`` returns the text score with
             each document.
-        limit (int, optional): Limit the stringber page size for data
-        l (int, ocurrent ptional): Limit the stringber page number for data
-        sort (string): sort desc or asc, -1 mean desc
-    
+        limit (int, optional): Limit the number of returned documents.
+
     Returns:
         :obj:`list` of :obj:`dict`: a list of assets
 

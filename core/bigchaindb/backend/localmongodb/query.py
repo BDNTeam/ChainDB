@@ -12,7 +12,7 @@ from bigchaindb.backend.utils import module_dispatch_registrar
 from bigchaindb.backend.localmongodb.connection import LocalMongoDBConnection
 from bigchaindb.common.transaction import Transaction
 
-register_query =  (backend.query)
+register_query = module_dispatch_registrar(backend.query)
 
 
 @register_query(LocalMongoDBConnection)
@@ -37,6 +37,7 @@ def get_transactions(conn, transaction_ids):
                   projection={'_id': False}))
     except IndexError:
         pass
+
 
 @register_query(LocalMongoDBConnection)
 def store_metadatas(conn, metadata):
@@ -206,13 +207,14 @@ def get_block(conn, block_id):
 
 
 @register_query(LocalMongoDBConnection)
-def get_block_list(conn, pagesize=1, page=10, sort=-1):
+def get_block_list(conn, pagesize, page):
     try:
         return conn.run(
             conn.collection('blocks')
-            .find().skip((page-1)*pagesize).limit(pagesize)).sort({"height":sort})
+            .find().sort([('height', DESCENDING)]).skip((page-1)*pagesize).limit(pagesize))
     except IndexError:
         pass
+
 
 @register_query(LocalMongoDBConnection)
 def get_block_with_transaction(conn, txid):
@@ -220,6 +222,7 @@ def get_block_with_transaction(conn, txid):
         conn.collection('blocks')
         .find({'transactions': txid},
               projection={'_id': False, 'height': True}))
+
 
 @register_query(LocalMongoDBConnection)
 def get_block_count(conn):
@@ -234,7 +237,6 @@ def delete_transactions(conn, txn_ids):
     conn.run(conn.collection('assets').delete_many({'id': {'$in': txn_ids}}))
     conn.run(conn.collection('metadata').delete_many({'id': {'$in': txn_ids}}))
     conn.run(conn.collection('transactions').delete_many({'id': {'$in': txn_ids}}))
-
 
 @register_query(LocalMongoDBConnection)
 def store_unspent_outputs(conn, *unspent_outputs):

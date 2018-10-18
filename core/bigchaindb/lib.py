@@ -365,6 +365,32 @@ class BigchainDB(object):
 
         return [block['height'] for block in blocks]
 
+    def get_block_list(self, page_size, page):
+        """Retrieve the list of blocks with params`
+
+        Args:
+            pagesize (int): page size for data
+            page (int): current page number for data
+
+        Returns:
+            Block id list (list(int))
+        """
+        blocks = list(backend.query.get_block_list(self.connection, page_size, page))
+
+        return [{'height':block['height'],'app_hash':block['app_hash']} for block in blocks]
+
+
+    def get_block_count(self):
+        """Retrieve the block total count`
+
+        Returns:
+            Block count number
+        """
+        count = backend.query.get_block_count(self.connection)
+
+        return count
+
+
     def validate_transaction(self, tx, current_transactions=[]):
         """Validate a transaction against the current status of the database."""
 
