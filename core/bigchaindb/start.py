@@ -34,8 +34,8 @@ BANNER = """
 ****************************************************************************
 """
 
-
 def start(args):
+
     # Exchange object for event stream api
     logger.info('Starting BigchainDB')
     exchange = Exchange()

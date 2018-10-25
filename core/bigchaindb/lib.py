@@ -146,6 +146,9 @@ class BigchainDB(object):
     def delete_transactions(self, txs):
         return backend.query.delete_transactions(self.connection, txs)
 
+    def get_total_transaction_count(self):
+        return backend.query.get_total_transaction_count(self.connection)
+
     def update_utxoset(self, transaction):
         """Update the UTXO set given ``transaction``. That is, remove
         the outputs that the given ``transaction`` spends, and add the
@@ -340,11 +343,16 @@ class BigchainDB(object):
         if not block and block_id > latest_block_height:
             return
 
-        result = {'height': block_id,
+        result = {'id': str(block['_id']),
+                  'hash': block['app_hash'],
+                  'height': block_id,
                   'transactions': []}
 
         if block:
+            transaction_count = len(block['transactions'])
             transactions = backend.query.get_transactions(self.connection, block['transactions'])
+            result['transaction_count'] = transaction_count
+            result['latest_block_height'] = latest_block_height
             result['transactions'] = [t.to_dict() for t in Transaction.from_db(self, transactions)]
 
         return result
@@ -377,18 +385,13 @@ class BigchainDB(object):
         """
         blocks = list(backend.query.get_block_list(self.connection, page_size, page))
 
-        return [{'height':block['height'],'app_hash':block['app_hash']} for block in blocks]
-
-
-    def get_block_count(self):
-        """Retrieve the block total count`
-
-        Returns:
-            Block count number
-        """
-        count = backend.query.get_block_count(self.connection)
-
-        return count
+        return [{
+            'id':str(block['_id']),
+            'height':block['height'],
+            'app_hash':block['app_hash'],
+            'transactions':block['transactions'],
+            'transaction_count':len(block['transactions']
+        )} for block in blocks]
 
 
     def validate_transaction(self, tx, current_transactions=[]):
@@ -531,5 +534,15 @@ class BigchainDB(object):
     def delete_elections(self, height):
         return backend.query.delete_elections(self.connection, height)
 
+
+    def global_search(self, tx_or_block_id):
+        """Get the result with the specified `tx_or_block_id`.
+
+        Args:
+            tx_or_block_id (int): block id or transaction.
+        """
+
+        result = backend.query.global_search(self.connection, tx_or_block_id)
+        return result
 
 Block = namedtuple('Block', ('app_hash', 'height', 'transactions'))

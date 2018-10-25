@@ -35,11 +35,13 @@ ROUTES_API_V1 = [
     r('blocks/<int:block_id>', blocks.BlockApi),
     r('blocks/', blocks.BlockListApi),
     r('block_list/', blocks.BlockListWithParamsApi),
-    r('block_count/', blocks.BlockCount),
+    r('last_block/', blocks.LastBlock),
     r('transactions/<string:tx_id>', tx.TransactionApi),
     r('transactions', tx.TransactionListApi),
+    r('transaction_count', tx.TransactionCount),
     r('outputs/', outputs.OutputListApi),
     r('validators/', validators.ValidatorsApi),
+    r('global_search/', blocks.GlobalSearchApi),
 ]
 
 

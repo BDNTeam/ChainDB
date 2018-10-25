@@ -79,17 +79,38 @@ class BlockListWithParamsApi(Resource):
 
         return blocks
 
-class BlockCount(Resource):
+class LastBlock(Resource):
     def get(self):
-        """API endpoint to get the blocks count.
+        """API endpoint to get the last block.
 
         Return:
-            A number of block count.
+            Block object.
         """
 
         pool = current_app.config['bigchain_pool']
 
         with pool() as bigchain:
-            count = bigchain.get_block_count()
+            block = bigchain.get_latest_block()
 
-        return count
+        return block
+
+
+class GlobalSearchApi(Resource):
+    def get(self):
+        """API endpoint to search the block or transaction.
+
+        Return:
+            boolean.
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('tx_or_block_id', type=str, required=True, location='args')
+
+        args = parser.parse_args(strict=True)
+        tx_or_block_id = args['tx_or_block_id']
+
+        pool = current_app.config['bigchain_pool']
+
+        with pool() as bigchain:
+            result = bigchain.global_search(tx_or_block_id)
+
+        return result

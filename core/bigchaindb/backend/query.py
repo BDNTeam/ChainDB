@@ -87,6 +87,17 @@ def get_transactions(connection, transaction_ids):
 
 
 @singledispatch
+def get_total_transaction_count(conn):
+    """Get total transactions count from the transactions table.
+
+    Returns:
+        The count of all transactions.
+    """
+
+    raise NotImplementedError
+
+
+@singledispatch
 def get_asset(connection, asset_id):
     """Get a transaction from the transactions table.
 
@@ -183,16 +194,6 @@ def get_block_with_transaction(connection, txid):
 
     Returns:
         block_id (int): the block id or `None`
-    """
-
-    raise NotImplementedError
-
-@singledispatch
-def get_block_count(conn):
-    """Get block total count from the bigchain table.
-    
-    Returns:
-        count (int): the total count
     """
 
     raise NotImplementedError
@@ -447,5 +448,20 @@ def delete_abci_chain(conn, height):
 def get_latest_abci_chain(conn):
     """Returns the ABCI chain stored at the biggest height, if any,
     None otherwise.
+    """
+    raise NotImplementedError
+
+
+@singledispatch
+def get_abci_chain_count(conn):
+    """Returns the ABCI chain machine count
+    """
+    raise NotImplementedError
+
+
+
+@singledispatch
+def global_search(conn, tx_or_block_id):
+    """Search block or transaction
     """
     raise NotImplementedError

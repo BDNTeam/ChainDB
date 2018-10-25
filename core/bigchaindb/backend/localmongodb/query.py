@@ -40,6 +40,17 @@ def get_transactions(conn, transaction_ids):
 
 
 @register_query(LocalMongoDBConnection)
+def get_total_transaction_count(conn):
+    try:
+        return conn.run(
+            conn.collection('transactions')
+            .count()
+            )
+    except IndexError:
+        pass
+
+
+@register_query(LocalMongoDBConnection)
 def store_metadatas(conn, metadata):
     return conn.run(
         conn.collection('metadata')
@@ -202,8 +213,7 @@ def get_spending_transactions(conn, inputs):
 def get_block(conn, block_id):
     return conn.run(
         conn.collection('blocks')
-        .find_one({'height': block_id},
-                  projection={'_id': False}))
+        .find_one({'height': block_id}))
 
 
 @register_query(LocalMongoDBConnection)
@@ -222,14 +232,6 @@ def get_block_with_transaction(conn, txid):
         conn.collection('blocks')
         .find({'transactions': txid},
               projection={'_id': False, 'height': True}))
-
-
-@register_query(LocalMongoDBConnection)
-def get_block_count(conn):
-    return conn.run(
-        conn.collection('blocks')
-        .count()
-    )
 
 
 @register_query(LocalMongoDBConnection)
@@ -401,3 +403,35 @@ def get_latest_abci_chain(conn):
         conn.collection('abci_chains')
             .find_one(projection={'_id': False}, sort=[('height', DESCENDING)])
     )
+
+
+@register_query(LocalMongoDBConnection)
+def get_abci_chain_count(conn):
+    return conn.run(
+        conn.collection('abci_chains')
+            .count()
+    )
+
+
+@register_query(LocalMongoDBConnection)
+def global_search(conn, tx_or_block_id):
+    tx = conn.run(
+        conn.collection('transactions')
+        .find_one({'id': tx_or_block_id}, {'_id': 0}))
+
+    if tx:
+        return {'result':True,'result_type':'transaction'}
+
+    try:
+        height = int(tx_or_block_id)
+    except:
+        height = -1
+
+    block =  conn.run(
+        conn.collection('blocks')
+        .find_one({'height': height}))
+
+    if block:
+        return {'result':True,'result_type':'block'}
+
+    return {'result':False}

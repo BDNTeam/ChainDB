@@ -103,3 +103,19 @@ class TransactionListApi(Resource):
             return response
         else:
             return make_error(status_code, message)
+
+
+class TransactionCount(Resource):
+    def get(self):
+        """API endpoint to get the transaction count.
+
+        Return:
+            A number of all transaction count.
+        """
+
+        pool = current_app.config['bigchain_pool']
+
+        with pool() as bigchain:
+            count = bigchain.get_total_transaction_count()
+
+        return count
