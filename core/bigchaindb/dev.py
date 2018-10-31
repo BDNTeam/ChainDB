@@ -10,5 +10,5 @@ import bigchaindb
 from bigchaindb.start import start
 from argparse import Namespace
 
-args = Namespace(config=None, yes=True, skip_initialize_database=False)
+args = Namespace(config=None, yes=True, skip_initialize_database=False, experimental_parallel_validation=False)
 start(args)

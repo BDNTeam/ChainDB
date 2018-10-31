@@ -147,7 +147,7 @@ class BigchainDB(object):
         return backend.query.delete_transactions(self.connection, txs)
 
     def get_total_transaction_count(self):
-        return backend.query.get_total_transaction_count(self.connection)
+        return {"count":backend.query.get_total_transaction_count(self.connection)}
 
     def update_utxoset(self, transaction):
         """Update the UTXO set given ``transaction``. That is, remove

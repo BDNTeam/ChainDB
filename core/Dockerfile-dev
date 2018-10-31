@@ -2,12 +2,6 @@ ARG python_version=3.6
 FROM python:${python_version}
 LABEL maintainer "dev@bigchaindb.com"
 
-RUN apt-get update \
-    && apt-get install -y vim \
-    && pip install -U pip \
-    && pip install pynacl \
-    && apt-get autoremove \
-    && apt-get clean
 
 ARG backend
 ARG abci_status
