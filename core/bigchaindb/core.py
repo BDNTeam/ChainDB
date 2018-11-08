@@ -236,7 +236,7 @@ class App(BaseApplication):
         data = self.block_txn_hash.encode('utf-8')
 
         # register a new block only when new transactions are received
-        if len(self.block_txn_ids) == 0:
+        if self.block_txn_ids == 0:
             return
             
         if self.block_txn_ids:
