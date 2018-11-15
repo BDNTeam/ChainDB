@@ -45,7 +45,7 @@ def get_api_v1_info(api_prefix):
     ]
 
     return {
-        'docs': ''.join(docs_url),
+        # 'docs': ''.join(docs_url),
         'transactions': '{}transactions/'.format(api_prefix),
         'blocks': '{}blocks/'.format(api_prefix),
         'assets': '{}assets/'.format(api_prefix),

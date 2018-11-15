@@ -110,6 +110,9 @@ dist: clean ## builds source (and not for now, wheel package)
 	# python setup.py bdist_wheel
 	ls -l dist
 
+debug: check-deps
+	@pip install --no-cache-dir --process-dependency-links .
+
 ###############
 # Sub targets #
 ###############
